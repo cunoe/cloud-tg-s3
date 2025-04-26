@@ -104,3 +104,33 @@ async def check_file(
         return JSONResponse({"ContentLength": blob.size})
     else:
         return Response(status_code=HTTP_404_NOT_FOUND)
+
+
+@router.get("/public/{bucket_name}/{path}")
+async def public_download_file(
+    bucket_name: str,
+    path: str,
+    db: AsyncIOMotorClient = Depends(get_database),
+):
+    bucket = await crud_get_bucket_by_name(db, bucket_name)
+
+    if not bucket:
+        return Response(
+            status_code=HTTP_404_NOT_FOUND,
+        )
+
+    filters = BlobFilterParams(path=path, bucket_name=bucket_name)
+    blobs = await crud_get_all_blobs(db, filters)
+
+    if len(blobs) == 0:
+        return Response(
+            status_code=HTTP_404_NOT_FOUND,
+        )
+
+    blob = blobs[0]
+    result_file = await storage.get_file(blob.file)
+
+    return StreamingResponse(
+        result_file, 
+        media_type=blob.content_type,
+    )

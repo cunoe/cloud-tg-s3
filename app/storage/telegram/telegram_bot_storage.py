@@ -1,6 +1,7 @@
-from app.core.config import CID
+from app.core.config import CID, TOKEN
 from app.storage import Storage
 from app.storage.telegram.bot import bot
+import io
 
 
 class TelegramBotStorage(Storage):
@@ -10,4 +11,5 @@ class TelegramBotStorage(Storage):
 
     async def get_file(self, file_id: str):
         file = await bot.get_file(file_id)
-        return file
+        file_bytes = await file.download_as_bytearray()
+        return io.BytesIO(file_bytes)
