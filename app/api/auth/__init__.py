@@ -40,26 +40,26 @@ async def login(
     return {"access_token": token, "token_type": "bearer"}
 
 
-@router.post("/signup", response_model=User)
-async def signup(
-    user: UserInCreate = Body(...),
-    db: AsyncIOMotorClient = Depends(get_database),
-):
-    await check_free_username_and_email(db, user.username, user.email)
-    new_user = await crud_create_user(db, user)
+# @router.post("/signup", response_model=User)
+# async def signup(
+#     user: UserInCreate = Body(...),
+#     db: AsyncIOMotorClient = Depends(get_database),
+# ):
+#     await check_free_username_and_email(db, user.username, user.email)
+#     new_user = await crud_create_user(db, user)
 
-    # create bucket to new user
-    try:
-        await check_free_bucket_name(db, user.username)
-        bucket = BucketInCreate(
-            name=user.username,
-            owner_username=user.username,
-        )
-        await crud_create_bucket(db, bucket, User(**new_user.model_dump()))
-    except Exception as e:
-        logger.error("Error creating bucket: %s", e)
+#     # create bucket to new user
+#     try:
+#         await check_free_bucket_name(db, user.username)
+#         bucket = BucketInCreate(
+#             name=user.username,
+#             owner_username=user.username,
+#         )
+#         await crud_create_bucket(db, bucket, User(**new_user.model_dump()))
+#     except Exception as e:
+#         logger.error("Error creating bucket: %s", e)
 
-    return new_user
+#     return new_user
 
 
 @router.get("/current_user", response_model=User)
