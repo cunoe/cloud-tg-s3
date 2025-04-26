@@ -131,6 +131,6 @@ async def public_download_file(
     result_file = await storage.get_file(blob.file)
 
     return StreamingResponse(
-        result_file, 
+        result_file,
         media_type=blob.content_type,
     )
