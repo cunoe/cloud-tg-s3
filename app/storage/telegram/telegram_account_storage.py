@@ -23,7 +23,16 @@ class TelegramAccountStorage(Storage):
             async for _ in app.get_dialogs():
                 pass
             response = await app.send_document(int(CID), document, file_name=filename)
-            return str(response.document.file_id)
+            file_id = ''
+            if response.document:
+                file_id = response.document.file_id
+            elif response.video:
+                file_id = response.video.file_id
+            elif response.photo:
+                file_id = response.photo.file_id
+            if not file_id:
+                raise ValueError("Failed to upload file: Invalid response from Telegram")
+            return str(file_id)
 
     async def get_file(self, file_id: str) -> io.BufferedReader:
         async with self.client() as app:

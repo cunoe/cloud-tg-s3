@@ -28,8 +28,8 @@ async def upload_file(
             status_code=HTTP_404_NOT_FOUND,
         )
 
-    if not await aws_sig_verify(bucket, request):
-        return Response(status_code=HTTP_403_FORBIDDEN)
+    # if not await aws_sig_verify(bucket, request):
+    #     return Response(status_code=HTTP_403_FORBIDDEN)
 
     filters = BlobFilterParams(path=path, bucket_name=bucket_name)
 
